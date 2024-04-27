@@ -7,7 +7,7 @@ namespace GameStore.Dtos
         public required string Name;
         public required string Genre;
         public required decimal Price; 
-        public required DateTime ReleaseDate;
+        // public required DateTime ReleaseDate;
     
     }
 

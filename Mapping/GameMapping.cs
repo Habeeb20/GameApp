@@ -11,7 +11,7 @@ namespace GameStore.Mapping
                 Name = game.Name,
                 Genre = game.Genre,
                 Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
+                // ReleaseDate = game.ReleaseDate,
 
             };
 
@@ -25,21 +25,21 @@ namespace GameStore.Mapping
                 Name = game.Name,
                 Genre = game.Genre,
                 Price = game.Price,
-                ReleaseDate = game.ReleaseDate,
+                // ReleaseDate = game.ReleaseDate,
 
             };
 
         }
-        public static GameDtos ToDto(this Gaming game)
-        {
-            return new(
-                game.Id,
-                game.Name,
-                game.Genre,
-                game.Price,
-                game.ReleaseDate
-        );
-        }
+        // public static Gaming ToDto(this Gaming game)
+        // {
+        //     return new (
+        //         game.Id,
+        //         game.Name,
+        //         game.Genre,
+        //         game.Price
+        //         // game.ReleaseDate
+        // );
+        // }
         
     }
 

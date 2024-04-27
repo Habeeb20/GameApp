@@ -6,7 +6,7 @@ using System.Security.AccessControl;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using System.Reflection.Metadata;
-using GameStore.Service;
+using GameStore.Mapping;
 using GameStore.Dtos;
 using GameStore.Entity;
 using GameStore.data;
@@ -16,13 +16,13 @@ namespace GameStore.EndPoints
     {
 
         const  string GetGameEndpointName = "GetGame";
-        public static RouteGroupBuilder MapGamesEndpoints(this WebApplication routes)
+        public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
         {
-            var games=routes.MapGroup("games").WithParameterValidation(); 
+            var games=app.MapGroup("games").WithParameterValidation(); 
 
             games.MapGet("/", async(DataContext dbContext) => 
-            await dbContext.Gaming.Select(game => game.ToEntity()).ToListAsync());
-
+            await dbContext.Gaming.ToListAsync());
+ 
             games.MapGet("/{id}", async(int id, DataContext dbContext) =>
             {
                 Gaming? game = await dbContext.Gaming.FindAsync(id);
@@ -35,17 +35,16 @@ namespace GameStore.EndPoints
             
             games.MapPost("/", async (CreateGameDto newGame, DataContext dbContext ) => 
             {
-                Gaming game = await newGame.ToEntity();
+                Gaming game = newGame.ToEntity();
                 // game.Genre = dbContext.Genre.Find(newGame.GenreId);
               
 
                 dbContext.Gaming.Add(game);
                 await dbContext.SaveChangesAsync();
 
-                return ResultsCreatAtRoute(
-                    GetGameEndpointName,
-                    new{id = game.Id},
-                    game.ToDto()
+                return Results.CreatedAtRoute(
+                    GetGameEndpointName
+                
 
                 );
 
@@ -56,20 +55,20 @@ namespace GameStore.EndPoints
 
             games.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, DataContext dbContext ) => {
                 var existingGame = await dbContext.Gaming.FindAsync(id);
-                if(exisitingGame is null)
+                if(existingGame is null)
                 {   
                     return Results.NotFound();
                 }
-                dbContext.Entry(existingGame).CurrentValues.SetValues(updateGame.ToEntity(id));
+                dbContext.Entry(existingGame).CurrentValues.SetValues(updatedGame.ToEntity(id));
 
                 await dbContext.SaveChangesAsync();
 
                 return Results.NoContent();
 
             });
-            games.MapDelete("/{id}", (int id, DataContext dbContext) => 
+            games.MapDelete("/{id}", async (int id, DataContext dbContext) => 
             {
-                dbContext.Gaming.Where(game => game.Id == id).ExecuteDelete();
+               await  dbContext.Gaming.Where(game => game.Id == id).ExecuteDeleteAsync();
                 return Results.NoContent();
 
             });
